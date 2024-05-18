@@ -1,18 +1,18 @@
-import dynamic from "next/dynamic";
 import React from 'react';
-
-//const StockChart = dynamic(import("../components/StockChart"));
-//const InvestmentCalculator = dynamic(import("../components/InvestmentCalculator"));
-
 import StockChart from '../components/StockChart';
 import InvestmentCalculator from '../components/InvestmentCalculator';
+import styles from './index.module.css';
 
 const Home: React.FC = () => {
   return (
-    <div>
-      <h1>Stock Prices and Investment Calculator</h1>
-      <StockChart />
-      <InvestmentCalculator />
+    <div className={styles.container}>
+      <h1 className={styles.title}>주식 시세 및 투자 계산기</h1>
+      <div className={styles.section}>
+        <StockChart />
+      </div>
+      <div className={styles.section}>
+        <InvestmentCalculator />
+      </div>
     </div>
   );
 };
