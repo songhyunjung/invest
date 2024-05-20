@@ -1,49 +1,27 @@
-.container {
+.chartContainer {
+  width: 100%;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start; /* 왼쪽 정렬 */
+  background-color: #fff; /* 하얀 배경 */
   padding: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* 그림자 효과 */
+  border-radius: 8px; /* 둥근 모서리 */
 }
 
-.title {
-  font-size: 24px;
-  margin-bottom: 20px;
-}
 
-.controls {
+
+
+.chartHeader {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 20px;
 }
 
-.label {
-  margin-bottom: 10px;
-}
-
-.input {
-  margin-left: 10px;
+.chartDropdown {
   padding: 5px;
-  font-size: 16px;
-}
-
-.dropdown {
-  margin-left: 10px;
-  padding: 5px;
-  font-size: 16px;
-}
-
-.button {
-  margin: 5px;
-  padding: 10px 20px;
-  font-size: 16px;
-  cursor: pointer;
-  background-color: #4caf50;
-  color: white;
-  border: none;
-  border-radius: 5px;
-}
-
-.button:hover {
-  background-color: #45a049;
+  font-size: 1em;
+  border: 1px solid #ccc;
+  border-radius: 4px;
 }
