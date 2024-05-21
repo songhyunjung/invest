@@ -1,77 +1,58 @@
+// components/MarketDashboard.tsx
+
 import React, { useState, useEffect } from 'react';
+import styles from './MarketDashboard.module.css';
 
 const MarketDashboard: React.FC = () => {
   const [marketData, setMarketData] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const API_KEY = process.env.NEXT_PUBLIC_ALPHA_VANTAGE_API_KEY;
+
+  const fetchMarketData = async () => {
+    try {
+      const spResponse = await fetch(`https://cloud.iexapis.com/stable/stock/spy/quote?token=${process.env.NEXT_PUBLIC_IEX_API_KEY}`);
+      const nasdaqResponse = await fetch(`https://cloud.iexapis.com/stable/stock/qqq/quote?token=${process.env.NEXT_PUBLIC_IEX_API_KEY}`);
+      const dowjonesResponse = await fetch(`https://cloud.iexapis.com/stable/stock/dia/quote?token=${process.env.NEXT_PUBLIC_IEX_API_KEY}`);
+      const goldResponse = await fetch(`https://cloud.iexapis.com/stable/stock/gld/quote?token=${process.env.NEXT_PUBLIC_IEX_API_KEY}`);
+      const oilResponse = await fetch(`https://cloud.iexapis.com/stable/stock/uso/quote?token=${process.env.NEXT_PUBLIC_IEX_API_KEY}`);
+
+      const spData = await spResponse.json();
+      const nasdaqData = await nasdaqResponse.json();
+      const dowjonesData = await dowjonesResponse.json();
+      const goldData = await goldResponse.json();
+      const oilData = await oilResponse.json();
+
+      setMarketData({
+        sp: spData.latestPrice,
+        nasdaq: nasdaqData.latestPrice,
+        dowjones: dowjonesData.latestPrice,
+        gold: goldData.latestPrice,
+        oil: oilData.latestPrice,
+      });
+      setError(null);
+    } catch (error) {
+      setError('시장 데이터를 불러올 수 없습니다.');
+      console.error('Error fetching market data:', error);
+    }
+  };
 
   useEffect(() => {
-    if (!API_KEY) {
-      console.error('Alpha Vantage API key is not defined');
-      setError('Alpha Vantage API key is not defined');
-      setLoading(false);
-      return;
-    }
-
-    const fetchMarketData = async () => {
-      try {
-        const symbols = ['SPY', 'IXIC', 'DIA', 'GC=F', 'CL=F'];
-        const responses = await Promise.all(symbols.map(symbol => 
-          fetch(`https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${symbol}&apikey=${API_KEY}`)
-        ));
-
-        const data = await Promise.all(responses.map(response => response.json()));
-
-        const extractPrice = (data: any, symbol: string) => {
-          console.log(`Data for ${symbol}:`, data);
-          if (data['Global Quote'] && data['Global Quote']['05. price']) {
-            return data['Global Quote']['05. price'];
-          } else {
-            return 'Data not available';
-          }
-        };
-
-        setMarketData({
-          sp500: extractPrice(data[0], 'SPY'),
-          nasdaq: extractPrice(data[1], 'IXIC'),
-          dowjones: extractPrice(data[2], 'DIA'),
-          gold: extractPrice(data[3], 'GC=F'),
-          oil: extractPrice(data[4], 'CL=F')
-        });
-      } catch (error) {
-        console.error('Failed to fetch market data', error);
-        setError('Failed to fetch market data');
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchMarketData();
-  }, [API_KEY]);
-
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
-
-  if (!marketData) {
-    return <div>No market data available</div>;
-  }
+  }, []);
 
   return (
-    <div>
+    <div className={styles.container}>
       <h2>시장 데이터 대시보드</h2>
-      <ul>
-        <li>S&P 500: {marketData.sp500}</li>
-        <li>나스닥: {marketData.nasdaq}</li>
-        <li>다우존스: {marketData.dowjones}</li>
-        <li>금: {marketData.gold}</li>
-        <li>유가: {marketData.oil}</li>
-      </ul>
+      {error ? (
+        <p>{error}</p>
+      ) : (
+        <ul>
+          <li>S&P 500: {marketData?.sp || 'Data not available'}</li>
+          <li>나스닥: {marketData?.nasdaq || 'Data not available'}</li>
+          <li>다우존스: {marketData?.dowjones || 'Data not available'}</li>
+          <li>금: {marketData?.gold || 'Data not available'}</li>
+          <li>유가: {marketData?.oil || 'Data not available'}</li>
+        </ul>
+      )}
     </div>
   );
 };
